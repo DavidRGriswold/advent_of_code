@@ -4,17 +4,16 @@ console.log(fname);
 var fs = require("fs"),
   path = require("path");
 const { receiveMessageOnPort } = require("worker_threads");
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
 filePath = path.join(__dirname, fname);
-let sleep = require('util').promisify(setTimeout);
 let input = fs.readFileSync(filePath).toString();
 let robots = parseInput(input);
 let robots2 = parseInput(input);
 runRobots(robots, 100, 101, 103);
 let sf = getSafetyFactor(robots, 101, 103);
 console.log(sf);
-
-runRobotsWithPicture(robots, 7038, 101, 103,7038);
-console.log("");
+let treeRuns = runRobotsWithPicture(robots2, 101 * 103, 101, 103);
 /**
  * Parse the input and return an array of robot objects
  * @param {String} input
@@ -75,16 +74,18 @@ function getSafetyFactor(robots, w, h) {
   return q1 * q2 * q3 * q4;
 }
 /**
- *
+ * runs the robots printing the pictures. When it finds one with a long line
+ * in one row and one column it pauses, lets it display for 10 seconds, the
+ * console.logs the result. Run this in a LARGE terminal window for 103 rows!
  * @param {*} robots
  * @param {*} runs
  * @param {*} w
  * @param {*} h
  */
-function runRobotsWithPicture(robots, runs, w, h) {
+async function runRobotsWithPicture(robots, runs, w, h) {
   for (let i = 1; i <= runs; i++) {
     process.stdout.write("\x1b[2J"); // clear screen
-    process.stdout.write("\x1b["+(h+1)+";"+(w+1)+"H"+i);
+    process.stdout.write("\x1b[" + (h + 1) + ";" + (w + 1) + "H" + i);
     let rowCounts = new Array(h).fill(0);
     let colCounts = new Array(w).fill(0);
     for (let robot of robots) {
@@ -96,14 +97,16 @@ function runRobotsWithPicture(robots, runs, w, h) {
       if (robot.y >= h) robot.y = robot.y - h;
       rowCounts[robot.y]++;
       colCounts[robot.x]++;
-     process.stdout.write("\x1b["+robot.y+";"+robot.x+"H#");
-     
+      process.stdout.write("\x1b[" + robot.y + ";" + robot.x + "H#");
     }
-    if (rowCounts.filter((e)=>e>15).length > 1 && colCounts.filter((e)=>e>15).length > 1) {
-      process.stdout.write(""); // use this to pause debugger
+    if (
+      rowCounts.filter((e) => e > 15).length > 1 &&
+      colCounts.filter((e) => e > 15).length > 1
+    ) {
+      await sleep(10000);
+      process.stdout.write("\x1b[2J"); // clear screen
+      console.log(i);
+      break;
     }
-    
-
-    
   }
 }
