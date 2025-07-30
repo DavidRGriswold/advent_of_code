@@ -115,6 +115,7 @@ function assignPlots(i, j, p) {
       area: 1,
       sides: 0,
       perimeter: 4,
+      corners:4,
       hborders: [JSON.stringify([i, j]), JSON.stringify([i + 1, j])],
       vborders: [JSON.stringify([i, j]), JSON.stringify([i, j + 1])],
     };
