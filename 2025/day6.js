@@ -28,9 +28,10 @@ console.log("Part 1: " + total);
 
 // build a character grid
 let chars = lines.map((e) => e.split(""));
-//rotate it
-let rotatedChars = new Array(chars[0].length).fill(new Array(chars.length));
-rotatedChars = rotatedChars.map((e) => new Array(chars.length));
+//create an empty array of CxR size (js so ugly here)
+let rotatedChars = Array(chars[0].length)
+  .fill("")
+  .map((e) => Array(chars.length).fill(""));
 for (let i = 0; i < chars.length; i++) {
   for (let j = 0; j < chars[0].length; j++) {
     rotatedChars[j][i] = chars[i][j];
